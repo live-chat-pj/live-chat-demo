@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アカウント管理 - 管理画面</title>
+    <link rel="stylesheet" href="../common/styles.css">
+    <style>
+        /* ページ固有のスタイル */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 0.875rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 0.875rem;
+            background: white;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #ec4899;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #db2777;
+        }
+
+        .clear-link {
+            color: #ec4899;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            align-self: center;
+            cursor: pointer;
+        }
+
+        .clear-link:hover {
+            text-decoration: underline;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .account-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .account-table thead {
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .account-table th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .account-table td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .account-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .account-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .account-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f3f4f6;
+        }
+
+        .account-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .account-details {
+            flex: 1;
+        }
+
+        .account-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .account-updated {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .account-id {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .account-points {
+            font-weight: 700;
+            color: #ec4899;
+            font-size: 1rem;
+        }
+
+        .role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .role-badge.viewer {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-badge.streamer {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .role-badge.admin {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .account-actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-detail {
+            background: white;
+            color: #ec4899;
+            border: 1px solid #ec4899;
+            padding: 0.5rem 1rem;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .btn-detail:hover {
+            background: #fdf2f8;
+        }
+
+        .btn-password {
+            background: #ec4899;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .btn-password:hover {
+            background: #db2777;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-content">
+            <h1>
+                <span>🔧</span>
+                管理画面
+            </h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="location.href='monitoring.html'">配信モニタリング</button>
+                <button class="header-btn" onclick="location.href='ekyc.html'">eKYC審査</button>
+                <button class="header-btn" onclick="location.href='event-schedule.html'">イベントスケジュール</button>
+                <button class="header-btn" onclick="location.href='../login-admin.html'">ログアウト</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="main-container">
+        <!-- 検索カード -->
+        <div class="section-card">
+            <div class="section-header">
+                <h1 class="section-title">👥 アカウント管理</h1>
+                <p class="section-subtitle">女優アカウントと視聴者アカウントの管理を行います。</p>
+            </div>
+
+            <!-- タブ -->
+            <div class="tabs" style="margin-bottom: 1.5rem;">
+                <button class="tab active" onclick="switchTab('streamer')">女優アカウント</button>
+                <button class="tab" onclick="switchTab('viewer')">視聴者アカウント</button>
+            </div>
+
+            <!-- 女優アカウント検索コントロール -->
+            <div id="streamerSearchControls" class="search-controls">
+                <div class="form-group">
+                    <label class="form-label">名前 / ID</label>
+                    <input type="text" class="form-input" placeholder="例: まりあ / actor_1032">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ソート</label>
+                    <select class="form-select">
+                        <option>ポイント（高い順）</option>
+                        <option>ポイント（低い順）</option>
+                        <option>名前（昇順）</option>
+                        <option>名前（降順）</option>
+                        <option>登録日（新しい順）</option>
+                        <option>登録日（古い順）</option>
+                    </select>
+                </div>
+                <div class="search-actions">
+                    <button class="btn-primary">ソート&検索</button>
+                </div>
+                <a class="clear-link" onclick="clearStreamerSearch()">クリア</a>
+            </div>
+
+            <!-- 視聴者アカウント検索コントロール -->
+            <div id="viewerSearchControls" class="search-controls" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">ハンドル名 / ID</label>
+                    <input type="text" class="form-input" placeholder="例: ゆうた / viewer_2041">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ソート</label>
+                    <select class="form-select">
+                        <option>ポイント（高い順）</option>
+                        <option>ポイント（低い順）</option>
+                        <option>ハンドル名（昇順）</option>
+                        <option>ハンドル名（降順）</option>
+                        <option>登録日（新しい順）</option>
+                        <option>登録日（古い順）</option>
+                    </select>
+                </div>
+                <div class="search-actions">
+                    <button class="btn-primary">ソート&検索</button>
+                </div>
+                <a class="clear-link" onclick="clearViewerSearch()">クリア</a>
+            </div>
+        </div>
+
+        <!-- 女優アカウント結果カード -->
+        <div id="streamerResults" class="section-card">
+            <!-- 結果ヘッダー -->
+            <div class="results-header">
+                <div class="results-info">登録女優 <strong>3</strong>名 / 本日新規 <strong>0</strong>名</div>
+                <button class="btn-primary" onclick="alert('新規アカウント発行機能（未実装）')">新規アカウント発行</button>
+            </div>
+
+            <!-- 女優アカウントテーブル -->
+            <table class="account-table">
+                <thead>
+                    <tr>
+                        <th>プロフィール</th>
+                        <th>名前</th>
+                        <th>ID</th>
+                        <th>獲得ポイント</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="account-profile">
+                                <div class="account-avatar">
+                                    <img src="../../images/actress/actress_01.png" alt="まりあ">
+                                </div>
+                                <div class="account-details">
+                                    <div class="account-name">まりあ</div>
+                                    <div class="account-updated">最終更新: 2024/12/17 08:20</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>まりあ</td>
+                        <td class="account-id">actor_1032</td>
+                        <td class="account-points">152,400 pt</td>
+                        <td>
+                            <div class="account-actions-cell">
+                                <button class="btn-detail" onclick="alert('詳細表示機能（未実装）')">詳細</button>
+                                <button class="btn-password" onclick="alert('パスワード発行機能（未実装）')">パスワード発行</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="account-profile">
+                                <div class="account-avatar">
+                                    <img src="../../images/actress/actress_02.png" alt="さくら">
+                                </div>
+                                <div class="account-details">
+                                    <div class="account-name">さくら</div>
+                                    <div class="account-updated">最終更新: 2024/12/16 19:40</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>さくら</td>
+                        <td class="account-id">actor_1012</td>
+                        <td class="account-points">130,200 pt</td>
+                        <td>
+                            <div class="account-actions-cell">
+                                <button class="btn-detail" onclick="alert('詳細表示機能（未実装）')">詳細</button>
+                                <button class="btn-password" onclick="alert('パスワード発行機能（未実装）')">パスワード発行</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="account-profile">
+                                <div class="account-avatar">
+                                    <img src="../../images/actress/actress_03.png" alt="ひかり">
+                                </div>
+                                <div class="account-details">
+                                    <div class="account-name">ひかり</div>
+                                    <div class="account-updated">最終更新: 2024/12/15 12:05</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>ひかり</td>
+                        <td class="account-id">actor_1099</td>
+                        <td class="account-points">98,500 pt</td>
+                        <td>
+                            <div class="account-actions-cell">
+                                <button class="btn-detail" onclick="alert('詳細表示機能（未実装）')">詳細</button>
+                                <button class="btn-password" onclick="alert('パスワード発行機能（未実装）')">パスワード発行</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 視聴者アカウント結果カード -->
+        <div id="viewerResults" class="section-card" style="display: none;">
+            <!-- 結果ヘッダー -->
+            <div class="results-header">
+                <div class="results-info">登録視聴者 <strong>5</strong>名 / 本日新規 <strong>1</strong>名</div>
+                <button class="btn-primary" onclick="alert('新規アカウント発行機能（未実装）')">新規アカウント発行</button>
+            </div>
+
+            <!-- 視聴者アカウントテーブル -->
+            <table class="account-table">
+                <thead>
+                    <tr>
+                        <th>ハンドル名</th>
+                        <th>メールアドレス</th>
+                        <th>ID</th>
+                        <th>保有ポイント</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="account-profile">
+                                <div class="account-avatar">
+                                    <div style="width: 100%; height: 100%; background: #ec4899; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">ゆ</div>
+                                </div>
+                                <div class="account-details">
+                                    <div class="account-name">ゆうた</div>
+                                    <div class="account-updated">最終ログイン: 2024/12/17 14:20</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="account-id">yuta@example.com</td>
+                        <td class="account-id">viewer_2041</td>
+                        <td class="account-points">8,520 pt</td>
+                        <td>
+                            <div class="account-actions-cell">
+                                <button class="btn-detail" onclick="alert('詳細表示機能（未実装）')">詳細</button>
+                                <button class="btn-password" onclick="alert('パスワード再発行機能（未実装）')">パスワード再発行</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="account-profile">
+                                <div class="account-avatar">
+                                    <div style="width: 100%; height: 100%; background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">け</div>
+                                </div>
+                                <div class="account-details">
+                                    <div class="account-name">けんじ</div>
+                                    <div class="account-updated">最終ログイン: 2024/12/16 21:15</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="account-id">kenji@example.com</td>
+                        <td class="account-id">viewer_2098</td>
+                        <td class="account-points">5,280 pt</td>
+                        <td>
+                            <div class="account-actions-cell">
+                                <button class="btn-detail" onclick="alert('詳細表示機能（未実装）')">詳細</button>
+                                <button class="btn-password" onclick="alert('パスワード再発行機能（未実装）')">パスワード再発行</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="account-profile">
+                                <div class="account-avatar">
+                                    <div style="width: 100%; height: 100%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">た</div>
+                                </div>
+                                <div class="account-details">
+                                    <div class="account-name">たかし</div>
+                                    <div class="account-updated">最終ログイン: 2024/12/16 18:40</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="account-id">takashi@example.com</td>
+                        <td class="account-id">viewer_2134</td>
+                        <td class="account-points">12,100 pt</td>
+                        <td>
+                            <div class="account-actions-cell">
+                                <button class="btn-detail" onclick="alert('詳細表示機能（未実装）')">詳細</button>
+                                <button class="btn-password" onclick="alert('パスワード再発行機能（未実装）')">パスワード再発行</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../common/app.js"></script>
+    <script>
+        // タブ切り替え
+        function switchTab(type) {
+            // タブのアクティブ状態を更新
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach((tab, index) => {
+                if ((type === 'streamer' && index === 0) || (type === 'viewer' && index === 1)) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // 検索コントロールとテーブルを切り替え
+            if (type === 'streamer') {
+                document.getElementById('streamerSearchControls').style.display = 'flex';
+                document.getElementById('viewerSearchControls').style.display = 'none';
+                document.getElementById('streamerResults').style.display = 'block';
+                document.getElementById('viewerResults').style.display = 'none';
+            } else {
+                document.getElementById('streamerSearchControls').style.display = 'none';
+                document.getElementById('viewerSearchControls').style.display = 'flex';
+                document.getElementById('streamerResults').style.display = 'none';
+                document.getElementById('viewerResults').style.display = 'block';
+            }
+        }
+
+        // 女優検索クリア
+        function clearStreamerSearch() {
+            document.querySelector('#streamerSearchControls .form-input').value = '';
+        }
+
+        // 視聴者検索クリア
+        function clearViewerSearch() {
+            document.querySelector('#viewerSearchControls .form-input').value = '';
+        }
+    </script>
+</body>
+</html>

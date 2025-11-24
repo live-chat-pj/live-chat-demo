@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベントスケジュール管理 - 管理画面</title>
+    <link rel="stylesheet" href="../common/styles.css">
+    <style>
+        /* ページ固有のスタイル */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-table {
+            background: white;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.875rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background: #ec4899;
+            color: white;
+            border: none;
+            border-radius: 0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #db2777;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-content">
+            <h1>
+                <span>🔧</span>
+                管理画面
+            </h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="location.href='account-admin.html'">アカウント管理</button>
+                <button class="header-btn" onclick="location.href='monitoring.html'">配信モニタリング</button>
+                <button class="header-btn" onclick="location.href='ekyc.html'">eKYC審査</button>
+                <button class="header-btn" onclick="location.href='../login-admin.html'">ログアウト</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="main-container">
+        <h1 class="page-title">📅 イベントスケジュール管理</h1>
+
+        <div class="schedule-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>配信者</th>
+                        <th>イベント日時</th>
+                        <th>配信時間</th>
+                        <th>ステータス</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>まりあ</td>
+                        <td>2024/12/18 (水)</td>
+                        <td>20:00 - 22:00</td>
+                        <td><span class="status-badge approved">承認済み</span></td>
+                        <td><button class="action-btn">編集</button></td>
+                    </tr>
+                    <tr>
+                        <td>さくら</td>
+                        <td>2024/12/18 (水)</td>
+                        <td>18:00 - 20:00</td>
+                        <td><span class="status-badge approved">承認済み</span></td>
+                        <td><button class="action-btn">編集</button></td>
+                    </tr>
+                    <tr>
+                        <td>あやね</td>
+                        <td>2024/12/19 (木)</td>
+                        <td>19:00 - 21:00</td>
+                        <td><span class="status-badge pending">申請中</span></td>
+                        <td><button class="action-btn">承認</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../common/app.js"></script>
+</body>
+</html>

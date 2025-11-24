@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配信画面 - 配信者</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            padding: 0.75rem 1rem;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: #f3f4f6;
+            color: #111827;
+            padding: 0.5rem 1rem;
+            border-radius: 0;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .stats-panel {
+            background: white;
+            border-radius: 0;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ec4899;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .broadcast-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .video-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-container {
+            background: #000;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .room-status-bar {
+            background: #000;
+            color: white;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            padding: 0 1rem 0 0;
+            font-size: 0.875rem;
+        }
+
+        .room-type {
+            background: #6b7280;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .room-type.broadcasting {
+            background: #ec4899;
+        }
+
+        .viewer-counts {
+            display: flex;
+            gap: 1.5rem;
+            color: white;
+            align-items: center;
+        }
+
+        .count-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .video-preview {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .video-preview.broadcasting img {
+            display: block;
+        }
+
+        .camera-placeholder {
+            color: white;
+            text-align: center;
+        }
+
+        .video-preview.broadcasting .camera-placeholder {
+            display: none;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn.active {
+            background: #ec4899;
+        }
+
+        .video-actions {
+            padding-top: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+            box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .start-btn:active {
+            transform: translateY(0);
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+
+        .stop-btn:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .stop-btn:active {
+            transform: translateY(0);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .active-viewers-panel {
+            background: white;
+            border-radius: 0;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-header {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .viewer-count-badge {
+            background: #ec4899;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0;
+            font-size: 0.75rem;
+        }
+
+        .viewer-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .viewer-name {
+            padding: 0.5rem 0.75rem;
+            background: #f3f4f6;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: #111827;
+            font-weight: 500;
+            border: 1px solid #e5e7eb;
+        }
+
+        .chat-panel {
+            background: white;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-tabs {
+            display: flex;
+            background: #f3f4f6;
+        }
+
+        .chat-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .chat-tab.active {
+            color: #ec4899;
+            background: white;
+            border-bottom-color: #ec4899;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 400px;
+            min-height: 300px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #9ca3af;
+            padding: 2rem 0;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .message-avatar {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: #ec4899;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .message-username {
+            color: #ec4899;
+            font-weight: 600;
+        }
+
+        .message-time {
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+
+        .message-text {
+            padding-left: 2rem;
+            color: #111827;
+            line-height: 1.5;
+        }
+
+        .message.secret {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 0.5rem;
+            border-radius: 0;
+            border-left: 2px solid #8b5cf6;
+        }
+
+        .message.secret .message-username {
+            color: #8b5cf6;
+        }
+
+        .message.secret .message-avatar {
+            background: #8b5cf6;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: #ec4899;
+        }
+
+        .send-btn {
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .send-btn:hover {
+            background: #db2777;
+        }
+
+        .secret-message-control {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .stop-secret-btn {
+            width: 100%;
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .stop-secret-btn:hover {
+            background: #4b5563;
+        }
+
+        /* 配信終了確認モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 0;
+            border-radius: 0.5rem;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(236, 72, 153, 0.3);
+            overflow: hidden;
+            border: 2px solid #fce7f3;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid #f9a8d4;
+        }
+
+        .modal-icon {
+            width: 3rem;
+            height: 3rem;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.2);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #831843;
+        }
+
+        .modal-body {
+            padding: 2rem 1.5rem;
+            color: #374151;
+            line-height: 1.7;
+            font-size: 0.9375rem;
+        }
+
+        .modal-body strong {
+            color: #ec4899;
+            font-weight: 600;
+        }
+
+        .modal-actions {
+            padding: 1rem 1.5rem 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            background: #fafafa;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 1.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-btn-cancel {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+            border: none;
+        }
+
+        .modal-btn-confirm:hover {
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-confirm:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="back-btn" onclick="location.href='mypage.html'">← マイページへ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Stats Panel -->
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="stat-value" id="totalViewers">0</div>
+                <div class="stat-label">総視聴者数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="earnedPoints">0 pt</div>
+                <div class="stat-label">獲得ポイント</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="broadcastDuration">0分</div>
+                <div class="stat-label">配信時間</div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="broadcast-layout">
+            <!-- Video Section -->
+            <div class="video-section">
+                <div class="video-container">
+                    <!-- Room Status Bar -->
+                    <div class="room-status-bar">
+                        <div class="room-type" id="roomType">オフライン</div>
+                        <div class="viewer-counts">
+                            <div class="count-item">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                                </svg>
+                                <span>チャット中: <strong id="liveViewerCount">0</strong>人</span>
+                            </div>
+                            <div class="count-item">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                                <span>のぞき中: <strong id="peekViewerCount">0</strong>人</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="video-wrapper">
+                        <div class="video-preview" id="videoPreview">
+                            <div class="camera-placeholder">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">📹</div>
+                                <div style="font-size: 1.25rem;">カメラプレビュー</div>
+                                <div style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.5rem;">配信を開始してください</div>
+                            </div>
+                            <img src="../../images/actress/actress_01.png" alt="配信映像">
+                        </div>
+
+                        <!-- Video Controls -->
+                        <div class="video-controls">
+                            <div class="control-group">
+                                <button class="control-btn active" title="カメラON/OFF">
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                                    </svg>
+                                </button>
+                                <button class="control-btn active" title="マイクON/OFF">
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="control-group">
+                                <button class="control-btn" title="設定">
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Actions -->
+                <div class="video-actions">
+                    <button class="action-btn start-btn" id="startBtn" onclick="startBroadcast()">配信開始</button>
+                    <button class="action-btn stop-btn" id="stopBtn" style="display: none;" onclick="stopBroadcast()">配信終了</button>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Active Viewers -->
+                <div class="active-viewers-panel">
+                    <div class="panel-header">
+                        <span>発言ルーム</span>
+                        <span class="viewer-count-badge" id="liveRoomBadge">0人</span>
+                    </div>
+                    <div class="viewer-list" id="viewerList">
+                        <div style="color: #9ca3af; font-size: 0.875rem; padding: 1rem 0; text-align: center; width: 100%;">配信開始後に表示されます</div>
+                    </div>
+                </div>
+
+                <!-- Chat Panel -->
+                <div class="chat-panel">
+                    <div class="chat-tabs">
+                        <button class="chat-tab active">チャット</button>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <p class="empty-state">配信開始後にメッセージが表示されます</p>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="chat-input">
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="メッセージを入力..." id="chatInput">
+                            <button class="send-btn" onclick="sendMessage()">送信</button>
+                        </div>
+                    </div>
+
+                    <!-- Secret Message Control -->
+                    <div class="secret-message-control">
+                        <button class="stop-secret-btn">秘密メッセージ停止</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配信終了確認モーダル -->
+    <div class="modal-overlay" id="stopModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">⚠️</div>
+                <div class="modal-title">配信を終了しますか？</div>
+            </div>
+            <div class="modal-body">
+                配信を終了すると、<strong>視聴中の全ての視聴者</strong>が視聴できなくなります。<br>
+                <br>
+                本当に配信を終了してもよろしいですか？
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="closeStopModal()">キャンセル</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmStopBroadcast()">配信を終了</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let broadcasting = false;
+        let liveViewers = 0;
+        let peekViewers = 0;
+        let earnedPoints = 0;
+        let broadcastMinutes = 0;
+
+        // 配信開始
+        function startBroadcast() {
+            broadcasting = true;
+
+            // UI更新
+            document.getElementById('roomType').textContent = '配信中';
+            document.getElementById('roomType').classList.add('broadcasting');
+            document.getElementById('videoPreview').classList.add('broadcasting');
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'block';
+
+            // 視聴者数設定
+            liveViewers = 8;
+            peekViewers = 4;
+            earnedPoints = 1250;
+            broadcastMinutes = 45;
+            updateStats();
+
+            // 視聴者リスト表示
+            const viewerList = document.getElementById('viewerList');
+            viewerList.innerHTML = `
+                <div class="viewer-name">けんた</div>
+                <div class="viewer-name">たけし</div>
+                <div class="viewer-name">ゆうき</div>
+                <div class="viewer-name">しょうた</div>
+                <div class="viewer-name">ひろし</div>
+                <div class="viewer-name">まさき</div>
+                <div class="viewer-name">りょう</div>
+                <div class="viewer-name">のぶお</div>
+            `;
+
+            // チャットメッセージ表示
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="message">
+                    <div class="message-header">
+                        <div class="message-avatar">K</div>
+                        <span class="message-username">けんた</span>
+                        <span class="message-time">19:32</span>
+                    </div>
+                    <div class="message-text">こんばんは！今日も配信楽しみにしてました♪</div>
+                </div>
+                <div class="message">
+                    <div class="message-header">
+                        <div class="message-avatar">T</div>
+                        <span class="message-username">たけし</span>
+                        <span class="message-time">19:34</span>
+                    </div>
+                    <div class="message-text">今日も綺麗ですね～✨</div>
+                </div>
+                <div class="message secret">
+                    <div class="message-header">
+                        <div class="message-avatar">🔒</div>
+                        <span class="message-username">ゆうき（秘密）</span>
+                        <span class="message-time">19:35</span>
+                    </div>
+                    <div class="message-text">個別にお話しできて嬉しいです♡</div>
+                </div>
+                <div class="message">
+                    <div class="message-header">
+                        <div class="message-avatar">Y</div>
+                        <span class="message-username">ゆうき</span>
+                        <span class="message-time">19:36</span>
+                    </div>
+                    <div class="message-text">いつも楽しい配信ありがとう！</div>
+                </div>
+                <div class="message">
+                    <div class="message-header">
+                        <div class="message-avatar">S</div>
+                        <span class="message-username">しょうた</span>
+                        <span class="message-time">19:37</span>
+                    </div>
+                    <div class="message-text">今日も応援してます📣</div>
+                </div>
+            `;
+        }
+
+        // 配信終了確認モーダルを表示
+        function stopBroadcast() {
+            document.getElementById('stopModal').classList.add('active');
+        }
+
+        // モーダルを閉じる
+        function closeStopModal() {
+            document.getElementById('stopModal').classList.remove('active');
+        }
+
+        // 配信終了を実行
+        function confirmStopBroadcast() {
+            broadcasting = false;
+
+            // モーダルを閉じる
+            closeStopModal();
+
+            // UI更新
+            document.getElementById('roomType').textContent = 'オフライン';
+            document.getElementById('roomType').classList.remove('broadcasting');
+            document.getElementById('videoPreview').classList.remove('broadcasting');
+            document.getElementById('startBtn').style.display = 'block';
+            document.getElementById('stopBtn').style.display = 'none';
+
+            // リセット
+            liveViewers = 0;
+            peekViewers = 0;
+            updateStats();
+
+            // 視聴者リストリセット
+            const viewerList = document.getElementById('viewerList');
+            viewerList.innerHTML = '<div style="color: #9ca3af; font-size: 0.875rem; padding: 1rem 0; text-align: center; width: 100%;">配信開始後に表示されます</div>';
+
+            // チャットリセット
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '<p class="empty-state">配信開始後にメッセージが表示されます</p>';
+        }
+
+        // 統計情報更新
+        function updateStats() {
+            const total = liveViewers + peekViewers;
+            document.getElementById('totalViewers').textContent = total;
+            document.getElementById('liveViewerCount').textContent = liveViewers;
+            document.getElementById('peekViewerCount').textContent = peekViewers;
+            document.getElementById('liveRoomBadge').textContent = liveViewers + '人';
+            document.getElementById('earnedPoints').textContent = earnedPoints.toLocaleString() + ' pt';
+            document.getElementById('broadcastDuration').textContent = broadcastMinutes + '分';
+        }
+
+        // メッセージ送信（ダミー）
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            if (!input.value.trim()) return;
+
+            alert('メッセージ送信機能（未実装）');
+            input.value = '';
+        }
+    </script>
+</body>
+</html>

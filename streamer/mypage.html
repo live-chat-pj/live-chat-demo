@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配信者マイページ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header-nav {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            padding: 1rem 0;
+        }
+
+        .nav-tabs {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            padding: 0 2rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 2rem;
+            background: white;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #ec4899;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover {
+            background: #fdf2f8;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #111827;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem 0;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ec4899;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: #ec4899;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #db2777;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-stream {
+            background: #ec4899;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-stream:hover {
+            background: #db2777;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .schedule-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-link {
+            color: #ec4899;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .add-link:hover {
+            text-decoration: underline;
+        }
+
+        .schedule-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .schedule-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .schedule-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .schedule-info {
+            flex: 1;
+        }
+
+        .schedule-date {
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .schedule-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .schedule-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .schedule-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <div class="header-nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="location.href='mypage.html'">マイページ</button>
+            <button class="nav-tab" onclick="location.href='broadcast.html'">配信画面</button>
+            <button class="nav-tab" onclick="location.href='../login-admin.html'">ログアウト</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img src="../../images/actress/actress_01.png" alt="まゆみ">
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-name">まゆみ</h1>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">フォロワー</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">342</div>
+                            <div class="stat-label">今月の視聴者</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">24,800pt</div>
+                            <div class="stat-label">今月の収益</div>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-primary" onclick="location.href='broadcast.html'">配信開始</button>
+                        <button class="btn btn-secondary">プロフィール編集</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="profile-form">
+            <h2 class="section-title">プロフィール設定</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">配信者名</label>
+                    <input type="text" class="form-input" value="まゆみ">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">年齢</label>
+                    <input type="text" class="form-input" value="24歳">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">趣味</label>
+                    <input type="text" class="form-input" value="読書、映画鑑賞">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">特技</label>
+                    <input type="text" class="form-input" value="ピアノ、料理">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">自己紹介</label>
+                <textarea class="form-textarea">夜のまったり時間に合わせて雑談やゲーム配信を行っています。お気軽にコメントしてくださいね！</textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">SNSリンク</label>
+                    <input type="text" class="form-input" value="https://example.com/mayumi">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">サポートメッセージ</label>
+                    <input type="text" class="form-input" value="ギフトで応援よろしくお願いします">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary">下書き保存</button>
+                <button class="btn btn-primary">更新する</button>
+            </div>
+        </div>
+
+        <!-- Schedule Section -->
+        <div class="schedule-section">
+            <div class="section-header">
+                <h2 class="section-title">今後の配信予定</h2>
+                <a href="#" class="add-link">新しい配信を追加</a>
+            </div>
+
+            <!-- Schedule Item 1 -->
+            <div class="schedule-item">
+                <div class="schedule-avatar">
+                    <img src="../../images/actress/actress_01.png" alt="まゆみ">
+                </div>
+                <div class="schedule-info">
+                    <div class="schedule-date">本日 21:00-22:30</div>
+                    <div class="schedule-title">クリスマス直前トーク</div>
+                    <div class="schedule-description">まったり雑談とクリスマス準備トーク</div>
+                </div>
+                <div class="schedule-status">
+                    <span class="status-badge">配信開始30分前</span>
+                    <button class="btn-stream" onclick="location.href='broadcast.html'">配信画面へ</button>
+                </div>
+            </div>
+
+            <!-- Schedule Item 2 -->
+            <div class="schedule-item">
+                <div class="schedule-avatar">
+                    <img src="../../images/actress/actress_01.png" alt="まゆみ">
+                </div>
+                <div class="schedule-info">
+                    <div class="schedule-date">12/21 23:00-0:30</div>
+                    <div class="schedule-title">深夜の雑談配信</div>
+                    <div class="schedule-description">リクエストにお答えします</div>
+                </div>
+                <div class="schedule-status">
+                    <button class="btn-stream" onclick="location.href='broadcast.html'">配信画面へ</button>
+                </div>
+            </div>
+
+            <!-- Schedule Item 3 -->
+            <div class="schedule-item">
+                <div class="schedule-avatar">
+                    <img src="../../images/actress/actress_01.png" alt="まゆみ">
+                </div>
+                <div class="schedule-info">
+                    <div class="schedule-date">12/25 20:00-22:00</div>
+                    <div class="schedule-title">クリスマス特別配信</div>
+                    <div class="schedule-description">みんなでクリスマスをお祝いしましょう🎄</div>
+                </div>
+                <div class="schedule-status">
+                    <button class="btn-stream" onclick="location.href='broadcast.html'">配信画面へ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

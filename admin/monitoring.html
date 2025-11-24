@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配信モニタリング - 管理画面</title>
+    <link rel="stylesheet" href="../common/styles.css">
+    <style>
+        /* ページ固有のスタイル */
+        .main-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* Control Bar */
+        .control-bar {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 0.875rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 16px;
+            height: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 0.625rem 0.875rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 0.875rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .refresh-btn {
+            padding: 0.625rem 1rem;
+            background: #ec4899;
+            color: white;
+            border: none;
+            border-radius: 0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #db2777;
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.live {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .stat-icon.total {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .stat-icon.alert {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* Stream Grid */
+        .stream-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1536px) {
+            .stream-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .stream-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stream-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stream-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .stream-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .stream-card.alert {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1);
+        }
+
+        .stream-thumbnail {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .stream-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stream-status {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(8px);
+        }
+
+        .status-badge.status-live {
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+        }
+
+        .status-badge.status-ready {
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+        }
+
+        .status-badge.status-ended {
+            background: rgba(107, 114, 128, 0.9);
+            color: white;
+        }
+
+        .status-badge.status-alert {
+            background: rgba(245, 158, 11, 0.9);
+            color: white;
+        }
+
+        .stream-duration {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            padding: 0.25rem 0.625rem;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .stream-info {
+            padding: 1rem;
+        }
+
+        .stream-header {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .stream-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .stream-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stream-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stream-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stream-title {
+            font-size: 0.75rem;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stream-stats {
+            display: flex;
+            gap: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .stream-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .stream-stat-icon {
+            width: 16px;
+            height: 16px;
+            color: #9ca3af;
+        }
+
+        .stream-stat-value {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .alert-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 0;
+            font-size: 0.75rem;
+            color: #92400e;
+            margin-top: 0.5rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 2rem 0;
+        }
+
+        .page-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6b7280;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f9fafb;
+            border-color: #ec4899;
+        }
+
+        .page-btn.active {
+            background: #ec4899;
+            border-color: #ec4899;
+            color: white;
+            font-weight: 600;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            margin-left: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-content">
+            <h1>
+                <span>🔧</span>
+                管理画面
+            </h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="location.href='account-admin.html'">アカウント管理</button>
+                <button class="header-btn" onclick="location.href='ekyc.html'">eKYC審査</button>
+                <button class="header-btn" onclick="location.href='event-schedule.html'">イベントスケジュール</button>
+                <button class="header-btn" onclick="location.href='../login-admin.html'">ログアウト</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">📊 配信モニタリング</h1>
+        </div>
+
+        <!-- Control Bar -->
+        <div class="control-bar">
+            <div class="search-box">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" placeholder="配信者名で検索...">
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">ステータス:</span>
+                <select class="filter-select">
+                    <option>すべて</option>
+                    <option>配信中</option>
+                    <option>準備中</option>
+                    <option>終了</option>
+                    <option>アラート</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">並び順:</span>
+                <select class="filter-select">
+                    <option>開始時刻順</option>
+                    <option>視聴者数順</option>
+                    <option>コメント数順</option>
+                </select>
+            </div>
+
+            <button class="refresh-btn">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                </svg>
+                更新
+            </button>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="stats-summary">
+            <div class="stat-card">
+                <div class="stat-icon live">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">配信中</div>
+                    <div class="stat-value">7</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">総配信数</div>
+                    <div class="stat-value">12</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon alert">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">アラート</div>
+                    <div class="stat-value">2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stream Grid -->
+        <div class="stream-grid">
+            <!-- Stream Card 1 - Live with Alert -->
+            <div class="stream-card alert">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_01.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-live">● 配信中</span>
+                        <span class="status-badge status-alert">⚠ アラート</span>
+                    </div>
+                    <div class="stream-duration">1:32:45</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_01.png" alt="まりあ">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">まりあ</div>
+                            <div class="stream-title">雑談配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">1,234</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">876</span>
+                        </div>
+                    </div>
+                    <div class="alert-indicator">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92z" clip-rule="evenodd" />
+                        </svg>
+                        不適切なコメント検出
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 2 - Live -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_02.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-live">● 配信中</span>
+                    </div>
+                    <div class="stream-duration">0:45:12</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_02.png" alt="さくら">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">さくら</div>
+                            <div class="stream-title">まったり雑談配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">856</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">523</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 3 - Live -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_03.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-live">● 配信中</span>
+                    </div>
+                    <div class="stream-duration">2:15:33</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_03.png" alt="ひかり">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">ひかり</div>
+                            <div class="stream-title">ゲーム実況配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">2,103</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">1,456</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 4 - Live with Alert -->
+            <div class="stream-card alert">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_01.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-live">● 配信中</span>
+                        <span class="status-badge status-alert">⚠ アラート</span>
+                    </div>
+                    <div class="stream-duration">0:12:08</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_01.png" alt="りな">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">りな</div>
+                            <div class="stream-title">ASMR配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">345</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">167</span>
+                        </div>
+                    </div>
+                    <div class="alert-indicator">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92z" clip-rule="evenodd" />
+                        </svg>
+                        接続品質低下
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 5 - Live -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_02.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-live">● 配信中</span>
+                    </div>
+                    <div class="stream-duration">1:05:22</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_02.png" alt="あやか">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">あやか</div>
+                            <div class="stream-title">料理配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">678</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">423</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 6 - Ready -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_03.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-ready">準備中</span>
+                    </div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_03.png" alt="みお">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">みお</div>
+                            <div class="stream-title">21:00開始予定</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">-</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 7 - Live -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_01.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-live">● 配信中</span>
+                    </div>
+                    <div class="stream-duration">0:33:15</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_01.png" alt="なな">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">なな</div>
+                            <div class="stream-title">カラオケ配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">512</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">289</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 8 - Live -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_02.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-live">● 配信中</span>
+                    </div>
+                    <div class="stream-duration">1:48:56</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_02.png" alt="ゆい">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">ゆい</div>
+                            <div class="stream-title">深夜トーク</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">923</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">645</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 9 - Ended -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_03.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-ended">終了</span>
+                    </div>
+                    <div class="stream-duration">2:30:00</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_03.png" alt="かな">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">かな</div>
+                            <div class="stream-title">朝活配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">1,567</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">1,023</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 10 - Ready -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_01.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-ready">準備中</span>
+                    </div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_01.png" alt="えみ">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">えみ</div>
+                            <div class="stream-title">22:00開始予定</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">-</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 11 - Ended -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_02.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-ended">終了</span>
+                    </div>
+                    <div class="stream-duration">1:15:30</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_02.png" alt="れい">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">れい</div>
+                            <div class="stream-title">ダンス配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">834</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">567</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Card 12 - Ended -->
+            <div class="stream-card">
+                <div class="stream-thumbnail">
+                    <img src="../../images/actress/actress_03.png" alt="配信サムネイル">
+                    <div class="stream-status">
+                        <span class="status-badge status-ended">終了</span>
+                    </div>
+                    <div class="stream-duration">0:45:12</div>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-header">
+                        <div class="stream-avatar">
+                            <img src="../../images/actress/actress_03.png" alt="もも">
+                        </div>
+                        <div class="stream-details">
+                            <div class="stream-name">もも</div>
+                            <div class="stream-title">お絵描き配信</div>
+                        </div>
+                    </div>
+                    <div class="stream-stats">
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                            <span class="stream-stat-value">456</span>
+                        </div>
+                        <div class="stream-stat">
+                            <svg class="stream-stat-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span class="stream-stat-value">312</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="page-btn" disabled>
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+            <button class="page-btn">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <span class="page-info">1-12件 / 全23件</span>
+        </div>
+    </div>
+
+    <script src="../common/app.js"></script>
+</body>
+</html>

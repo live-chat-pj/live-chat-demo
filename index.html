@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ライブ配信プラットフォーム - HTMLモック</title>
+    <link rel="stylesheet" href="common/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-container {
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 0;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .login-option {
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .login-option:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-option.viewer {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-color: #f9a8d4;
+        }
+
+        .login-option.viewer:hover {
+            border-color: #ec4899;
+            box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
+        }
+
+        .login-option.admin {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+            border-color: #c7d2fe;
+        }
+
+        .login-option.admin:hover {
+            border-color: #818cf8;
+            box-shadow: 0 10px 20px rgba(129, 140, 248, 0.2);
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .option-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .footer-info {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .info-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .demo-note {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 0;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .demo-note-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-note-text {
+            font-size: 0.75rem;
+            color: #78350f;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="welcome-card">
+            <div class="welcome-icon">🎭</div>
+            <h1 class="welcome-title">ライブ配信プラットフォーム</h1>
+            <p class="welcome-subtitle">
+                HTMLモックデモへようこそ<br>
+                ログイン方法を選択してください
+            </p>
+
+            <div class="login-options">
+                <!-- 視聴者ログイン -->
+                <a href="login-viewer.html" class="login-option viewer">
+                    <div class="option-icon">📺</div>
+                    <div class="option-title">視聴者としてログイン</div>
+                    <div class="option-description">
+                        配信を視聴、チャット参加、秘密メッセージ送信
+                    </div>
+                </a>
+
+                <!-- 管理者/配信者ログイン -->
+                <a href="login-admin.html" class="login-option admin">
+                    <div class="option-icon">🔧</div>
+                    <div class="option-title">管理者/配信者としてログイン</div>
+                    <div class="option-description">
+                        配信管理、モニタリング、アカウント管理、eKYC審査
+                    </div>
+                </a>
+            </div>
+
+            <!-- デモ情報 -->
+            <div class="demo-note">
+                <div class="demo-note-title">📝 デモについて</div>
+                <div class="demo-note-text">
+                    このHTMLモックは、18個の静的スナップショットを10個の動的ページに統合したものです。<br>
+                    特に <strong>viewer/watch-online.html</strong> は7つのファイルを統合し、<br>
+                    JavaScriptで状態管理を実装しています。
+                </div>
+            </div>
+
+            <!-- フッター情報 -->
+            <div class="footer-info">
+                <div class="info-title">📂 ファイル構成</div>
+                <div class="info-text">
+                    • 視聴者: stream-list.html, watch-online.html, watch-offline.html, mypage.html<br>
+                    • 配信者: mypage.html, broadcast.html<br>
+                    • 管理者: monitoring.html, event-schedule.html, ekyc.html, account-admin.html
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

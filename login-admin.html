@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者/配信者ログイン - ライブ配信プラットフォーム</title>
+    <link rel="stylesheet" href="common/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 0;
+            padding: 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .role-option:hover {
+            border-color: #667eea;
+            background: #f3f4f6;
+        }
+
+        .role-option.selected {
+            border-color: #667eea;
+            background: #eef2ff;
+        }
+
+        .role-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 0;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .footer-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .divider-text {
+            padding: 0 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">🔐</div>
+                <h1 class="login-title">管理者/配信者ログイン</h1>
+                <p class="login-subtitle">アカウントを選択してログインしてください</p>
+            </div>
+
+            <form id="loginForm">
+                <!-- 役割選択 -->
+                <div class="role-selector">
+                    <div class="role-option selected" data-role="admin">
+                        <div class="role-icon">🔧</div>
+                        <div class="role-name">管理者</div>
+                    </div>
+                    <div class="role-option" data-role="streamer">
+                        <div class="role-icon">📡</div>
+                        <div class="role-name">配信者</div>
+                    </div>
+                </div>
+
+                <!-- ユーザー名 -->
+                <div class="form-group">
+                    <label class="form-label" for="username">ユーザー名</label>
+                    <input
+                        type="text"
+                        id="username"
+                        class="form-input"
+                        placeholder="ユーザー名を入力"
+                        value="admin"
+                    >
+                </div>
+
+                <!-- パスワード -->
+                <div class="form-group">
+                    <label class="form-label" for="password">パスワード</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-input"
+                        placeholder="パスワードを入力"
+                        value="password"
+                    >
+                </div>
+
+                <!-- ログインボタン -->
+                <button type="submit" class="login-button">ログイン</button>
+            </form>
+
+            <div class="divider">
+                <span class="divider-text">または</span>
+            </div>
+
+            <div class="login-footer">
+                <a href="login-viewer.html" class="footer-link">視聴者としてログイン →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 役割選択
+        let selectedRole = 'admin';
+
+        document.querySelectorAll('.role-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.role-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                option.classList.add('selected');
+                selectedRole = option.dataset.role;
+
+                // ユーザー名のプレースホルダーを変更
+                const usernameInput = document.getElementById('username');
+                if (selectedRole === 'admin') {
+                    usernameInput.value = 'admin';
+                } else {
+                    usernameInput.value = 'まりあ';
+                }
+            });
+        });
+
+        // ログインフォーム送信
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // 選択された役割に応じてリダイレクト
+            if (selectedRole === 'admin') {
+                window.location.href = 'admin/monitoring.html';
+            } else {
+                window.location.href = 'streamer/mypage.html';
+            }
+        });
+    </script>
+</body>
+</html>

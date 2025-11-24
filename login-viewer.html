@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>視聴者ログイン - ライブ配信プラットフォーム</title>
+    <link rel="stylesheet" href="common/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 0;
+            padding: 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 0;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .guest-login {
+            margin-top: 1rem;
+        }
+
+        .guest-button {
+            width: 100%;
+            padding: 0.875rem;
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            border-radius: 0;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .guest-button:hover {
+            border-color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .divider-text {
+            padding: 0 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .footer-link {
+            color: #f5576c;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .register-link a {
+            color: #f5576c;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">📺</div>
+                <h1 class="login-title">視聴者ログイン</h1>
+                <p class="login-subtitle">アカウント情報を入力してログインしてください</p>
+            </div>
+
+            <form id="loginForm">
+                <!-- ユーザー名 -->
+                <div class="form-group">
+                    <label class="form-label" for="username">ユーザー名</label>
+                    <input
+                        type="text"
+                        id="username"
+                        class="form-input"
+                        placeholder="ユーザー名を入力"
+                        value="ユーザー1"
+                    >
+                </div>
+
+                <!-- パスワード -->
+                <div class="form-group">
+                    <label class="form-label" for="password">パスワード</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-input"
+                        placeholder="パスワードを入力"
+                        value="password"
+                    >
+                </div>
+
+                <!-- ログインボタン -->
+                <button type="submit" class="login-button">ログイン</button>
+            </form>
+
+            <!-- ゲストログイン -->
+            <div class="guest-login">
+                <button class="guest-button" onclick="location.href='viewer/stream-list.html'">
+                    🎭 ゲストとして視聴する
+                </button>
+            </div>
+
+            <!-- 新規登録リンク -->
+            <div class="register-link">
+                アカウントをお持ちでない方は <a href="#">新規登録</a>
+            </div>
+
+            <div class="divider">
+                <span class="divider-text">または</span>
+            </div>
+
+            <div class="login-footer">
+                <a href="login-admin.html" class="footer-link">管理者/配信者としてログイン →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ログインフォーム送信
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // 視聴者として配信一覧へリダイレクト
+            window.location.href = 'viewer/stream-list.html';
+        });
+    </script>
+</body>
+</html>

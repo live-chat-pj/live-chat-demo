@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eKYC審査 - 管理画面</title>
+    <link rel="stylesheet" href="../common/styles.css">
+    <style>
+        /* ページ固有のスタイル */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 2rem;
+        }
+
+        .kyc-table {
+            background: white;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.875rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn.approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .action-btn.approve:hover {
+            background: #059669;
+        }
+
+        .action-btn.reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .action-btn.reject:hover {
+            background: #dc2626;
+        }
+
+        .action-btn.view {
+            background: #6b7280;
+            color: white;
+        }
+
+        .action-btn.view:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-content">
+            <h1>
+                <span>🔧</span>
+                管理画面
+            </h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="location.href='account-admin.html'">アカウント管理</button>
+                <button class="header-btn" onclick="location.href='monitoring.html'">配信モニタリング</button>
+                <button class="header-btn" onclick="location.href='event-schedule.html'">イベントスケジュール</button>
+                <button class="header-btn" onclick="location.href='../login-admin.html'">ログアウト</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="main-container">
+        <h1 class="page-title">🔒 eKYC審査</h1>
+
+        <div class="kyc-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>配信者名</th>
+                        <th>申請日時</th>
+                        <th>本人確認書類</th>
+                        <th>審査ステータス</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ゆみ</td>
+                        <td>2024/12/17 15:30</td>
+                        <td>運転免許証</td>
+                        <td><span class="status-badge pending">審査待ち</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view" onclick="location.href='ekyc-detail.html'">確認</button>
+                                <button class="action-btn approve">承認</button>
+                                <button class="action-btn reject">却下</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>りな</td>
+                        <td>2024/12/16 18:20</td>
+                        <td>マイナンバーカード</td>
+                        <td><span class="status-badge pending">審査待ち</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view" onclick="location.href='ekyc-detail.html'">確認</button>
+                                <button class="action-btn approve">承認</button>
+                                <button class="action-btn reject">却下</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>かおり</td>
+                        <td>2024/12/15 12:00</td>
+                        <td>運転免許証</td>
+                        <td><span class="status-badge approved">承認済み</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view">確認</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../common/app.js"></script>
+</body>
+</html>

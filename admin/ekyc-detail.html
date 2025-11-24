@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eKYC審査詳細 - 管理画面</title>
+    <link rel="stylesheet" href="../common/styles.css">
+    <style>
+        /* ページ固有のスタイル */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #111827;
+        }
+
+        .document-section {
+            margin-bottom: 2rem;
+        }
+
+        .document-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .document-item {
+            position: relative;
+            border: 1px solid #e5e7eb;
+            border-radius: 0;
+            overflow: hidden;
+            aspect-ratio: 3/2;
+            background: #f9fafb;
+        }
+
+        .document-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #f9fafb;
+        }
+
+        .document-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            border: 1px solid;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+
+        .alert-icon {
+            flex-shrink: 0;
+            color: #3b82f6;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .alert-text {
+            font-size: 0.875rem;
+            color: #1e3a8a;
+            line-height: 1.5;
+        }
+
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 0.5rem;
+        }
+
+        .requirements-list li {
+            padding: 0.25rem 0 0.25rem 1.5rem;
+            position: relative;
+            font-size: 0.875rem;
+            color: #1e3a8a;
+        }
+
+        .requirements-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        .verification-notes {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 0;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .verification-notes-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .verification-notes-text {
+            font-size: 0.875rem;
+            color: #78350f;
+            line-height: 1.6;
+        }
+
+        .textarea-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 0.875rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .textarea-field:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-back {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+        }
+
+        /* プログレス表示 */
+        .progress-container {
+            background: white;
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+        .progress-line-active {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 2px;
+            background: #ec4899;
+            z-index: 1;
+            transition: width 0.3s;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .step.active .step-circle {
+            background: #ec4899;
+            border-color: #ec4899;
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: #ec4899;
+            font-weight: 600;
+        }
+
+        .step.completed .step-label {
+            color: #10b981;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="header-content">
+            <h1>
+                <span>🔧</span>
+                管理画面
+            </h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="location.href='account-admin.html'">アカウント管理</button>
+                <button class="header-btn" onclick="location.href='monitoring.html'">配信モニタリング</button>
+                <button class="header-btn" onclick="location.href='event-schedule.html'">イベントスケジュール</button>
+                <button class="header-btn" onclick="location.href='../login-admin.html'">ログアウト</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">🔒 eKYC審査詳細</h1>
+            <p class="page-subtitle">申請者: ゆみ｜申請日時: 2024/12/17 15:30</p>
+        </div>
+
+        <!-- プログレス表示 -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line"></div>
+                <div class="progress-line-active" style="width: 33%;"></div>
+
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">基本情報</div>
+                </div>
+
+                <div class="step active">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">本人確認書類</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">顔写真撮影</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">確認完了</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 基本情報 -->
+        <div class="content-card">
+            <h2 class="section-title">申請者情報</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">配信者名</div>
+                    <div class="info-value">ゆみ</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">メールアドレス</div>
+                    <div class="info-value">yumi@example.com</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">申請日時</div>
+                    <div class="info-value">2024年12月17日 15:30</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">審査ステータス</div>
+                    <div class="info-value">
+                        <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 0; font-size: 0.75rem; font-weight: 600;">審査待ち</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 本人確認書類 -->
+        <div class="content-card">
+            <h2 class="section-title">本人確認書類</h2>
+
+            <div class="alert alert-info">
+                <div class="alert-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">審査チェックポイント</div>
+                    <ul class="requirements-list">
+                        <li>文字が鮮明に読み取れること</li>
+                        <li>四隅がすべて写っていること</li>
+                        <li>光の反射で文字が隠れていないこと</li>
+                        <li>有効期限内の書類であること</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="document-section">
+                <div class="document-label">書類種類: 運転免許証</div>
+                <div class="document-grid">
+                    <div class="document-item">
+                        <div class="document-image" style="display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 0.875rem;">
+                            書類画像（表面）<br>プレースホルダー
+                        </div>
+                        <div class="document-caption">表面</div>
+                    </div>
+                    <div class="document-item">
+                        <div class="document-image" style="display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 0.875rem;">
+                            書類画像（裏面）<br>プレースホルダー
+                        </div>
+                        <div class="document-caption">裏面</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 審査メモ -->
+        <div class="content-card">
+            <h2 class="section-title">審査メモ（内部用）</h2>
+            <div class="verification-notes">
+                <div class="verification-notes-title">⚠️ 却下する場合は理由を必ず記入してください</div>
+                <div class="verification-notes-text">
+                    却下理由は申請者にメールで通知されます。
+                </div>
+            </div>
+            <textarea class="textarea-field" placeholder="審査メモを入力..."></textarea>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class="button-group">
+            <button class="btn btn-back" onclick="location.href='ekyc.html'">← 一覧に戻る</button>
+            <button class="btn btn-reject" onclick="handleReject()">却下</button>
+            <button class="btn btn-approve" onclick="handleApprove()">承認</button>
+        </div>
+    </div>
+
+    <script src="../common/app.js"></script>
+    <script>
+        function handleApprove() {
+            if (confirm('この申請を承認しますか？\n承認後、申請者は配信者として活動できるようになります。')) {
+                alert('承認しました（機能未実装）');
+                location.href = 'ekyc.html';
+            }
+        }
+
+        function handleReject() {
+            const memo = document.querySelector('.textarea-field').value.trim();
+            if (!memo) {
+                alert('却下理由を入力してください');
+                return;
+            }
+            if (confirm('この申請を却下しますか？\n却下理由が申請者にメールで送信されます。')) {
+                alert('却下しました（機能未実装）');
+                location.href = 'ekyc.html';
+            }
+        }
+    </script>
+</body>
+</html>

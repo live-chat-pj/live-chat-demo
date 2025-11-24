@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            color: #831843;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: white;
+            color: #9f1239;
+            padding: 0.5rem 1rem;
+            border: 1px solid #f9a8d4;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .back-btn:hover {
+            background: #fdf2f8;
+            border-color: #ec4899;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-btn {
+            background: white;
+            color: #9f1239;
+            padding: 0.5rem 1rem;
+            border: 1px solid #f9a8d4;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .header-btn:hover {
+            background: #fdf2f8;
+            border-color: #ec4899;
+        }
+
+        .points-display {
+            background: transparent;
+            color: #831843;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #111827;
+        }
+
+        .section {
+            background: white;
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .setting-value {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .current-name {
+            font-size: 1rem;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .edit-btn {
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .edit-btn:hover {
+            background: #db2777;
+        }
+
+        .favorite-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .favorite-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .favorite-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .favorite-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .favorite-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .favorite-status {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .favorite-status.offline {
+            background: #6b7280;
+        }
+
+        .favorite-info {
+            padding: 1rem;
+        }
+
+        .favorite-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .favorite-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .favorite-action {
+            padding: 0 1rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+
+        .btn-view {
+            background: #ec4899;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #db2777;
+        }
+
+        .btn-view:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-remove {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-remove:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="stream-list.html" class="back-btn">← 配信一覧へ戻る</a>
+                <h1>
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                    マイページ
+                </h1>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" data-modal-open="points-modal">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                        <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
+                    </svg>
+                    ポイントチャージ
+                </button>
+                <div class="points-display">
+                    <span>💰</span>
+                    <span>残ポイント: <strong>5,280 pt</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Points Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+                </svg>
+                保有ポイント
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">現在のポイント</span>
+                <div class="setting-value">
+                    <span class="current-name" style="color: #f59e0b; font-size: 1.5rem;">5,280 pt</span>
+                    <button class="edit-btn">ポイント購入</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handle Name Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+                ハンドルネーム設定
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">現在のハンドルネーム</span>
+                <div class="setting-value">
+                    <span class="current-name">ゲストユーザー</span>
+                    <button class="edit-btn">変更する</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorites Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                </svg>
+                お気に入り一覧
+            </div>
+
+            <div class="favorite-grid">
+                <!-- Favorite Card 1 - Online -->
+                <div class="favorite-card">
+                    <div class="favorite-image">
+                        <img src="../../images/actress/actress_01.png" alt="まりあ">
+                        <span class="favorite-status">配信中</span>
+                    </div>
+                    <div class="favorite-info">
+                        <div class="favorite-name">まりあ</div>
+                        <div class="favorite-meta">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            </svg>
+                            <span>チャット中: 8人</span>
+                        </div>
+                    </div>
+                    <div class="favorite-action">
+                        <button class="btn-small btn-view" onclick="location.href='watch-online.html'">配信を見る</button>
+                        <button class="btn-small btn-remove">削除</button>
+                    </div>
+                </div>
+
+                <!-- Favorite Card 2 - Offline -->
+                <div class="favorite-card">
+                    <div class="favorite-image">
+                        <img src="../../images/actress/actress_02.png" alt="さくら">
+                        <span class="favorite-status offline">オフライン</span>
+                    </div>
+                    <div class="favorite-info">
+                        <div class="favorite-name">さくら</div>
+                        <div class="favorite-meta">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                            </svg>
+                            <span>前回: 2時間前</span>
+                        </div>
+                    </div>
+                    <div class="favorite-action">
+                        <button class="btn-small btn-view" disabled>配信を見る</button>
+                        <button class="btn-small btn-remove">削除</button>
+                    </div>
+                </div>
+
+                <!-- Favorite Card 3 - Offline -->
+                <div class="favorite-card">
+                    <div class="favorite-image">
+                        <img src="../../images/actress/actress_03.png" alt="あや">
+                        <span class="favorite-status offline">オフライン</span>
+                    </div>
+                    <div class="favorite-info">
+                        <div class="favorite-name">あや</div>
+                        <div class="favorite-meta">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                            </svg>
+                            <span>前回: 1日前</span>
+                        </div>
+                    </div>
+                    <div class="favorite-action">
+                        <button class="btn-small btn-view" disabled>配信を見る</button>
+                        <button class="btn-small btn-remove">削除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ポイントチャージモーダル -->
+    <div class="modal-overlay" id="points-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; z-index: 1000;">
+        <div class="modal" style="background: white; border-radius: 0; padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 700;">💰 ポイントチャージ</h3>
+                <button class="modal-close" data-modal-close style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #6b7280; line-height: 1;">×</button>
+            </div>
+            <div class="modal-content" style="margin-bottom: 1.5rem;">
+                <p style="text-align: center; margin-bottom: 1rem;">ポイントチャージ機能（モック）</p>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn-secondary" data-modal-close style="background: white; color: #6b7280; border: 2px solid #e5e7eb; padding: 0.75rem 2rem; border-radius: 0; font-weight: 600; cursor: pointer; transition: all 0.2s;">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // モーダル制御
+        document.querySelectorAll('[data-modal-open]').forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = this.getAttribute('data-modal-open');
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = 'flex';
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-modal-close]').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal-overlay');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // モーダルオーバーレイクリックで閉じる
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
